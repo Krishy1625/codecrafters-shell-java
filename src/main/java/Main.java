@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -18,7 +20,17 @@ public class Main {
         }
         else if (command.startsWith("echo ")){
             ArrayList<String> commandParts = parseArguments(command);
-            System.out.println(String.join(" ", commandParts.subList(1, commandParts.size())));
+            int redirectionIndex = findOutputRedirection(commandParts);
+            int outputEnd = redirectionIndex == -1 ? commandParts.size() : redirectionIndex;
+            String output = String.join(" ", commandParts.subList(1, outputEnd));
+            if (redirectionIndex == -1) {
+                System.out.println(output);
+            } else {
+                try (PrintStream outputStream = new PrintStream(
+                    new FileOutputStream(resolveFile(commandParts.get(redirectionIndex + 1), currentDirectory)))) {
+                    outputStream.println(output);
+                }
+            }
         }
         else if (command.startsWith("type ")){
             type_command(command);
@@ -43,12 +55,20 @@ public class Main {
         }
         else{
             ArrayList<String> commandParts = parseArguments(command);
+            int redirectionIndex = findOutputRedirection(commandParts);
+            File outputFile = null;
+            if (redirectionIndex != -1) {
+                outputFile = resolveFile(commandParts.get(redirectionIndex + 1), currentDirectory);
+                commandParts.subList(redirectionIndex, redirectionIndex + 2).clear();
+            }
             if (findExecutable(commandParts.get(0)) != null) {
-                new ProcessBuilder(commandParts)
+                ProcessBuilder processBuilder = new ProcessBuilder(commandParts)
                     .directory(currentDirectory)
-                    .inheritIO()
-                    .start()
-                    .waitFor();
+                    .inheritIO();
+                if (outputFile != null) {
+                    processBuilder.redirectOutput(outputFile);
+                }
+                processBuilder.start().waitFor();
             } else {
                 System.out.println(commandParts.get(0) + ": command not found");
             }
@@ -95,6 +115,21 @@ public class Main {
         }
 
         return null;
+    }
+
+    private static int findOutputRedirection(ArrayList<String> commandParts) {
+        for (int index = 0; index < commandParts.size() - 1; index++) {
+            if (commandParts.get(index).equals(">") || commandParts.get(index).equals("1>")) {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    private static File resolveFile(String fileName, File currentDirectory) {
+        File file = new File(fileName);
+        return file.isAbsolute() ? file : new File(currentDirectory, fileName);
     }
 
     private static ArrayList<String> parseArguments(String command) {
