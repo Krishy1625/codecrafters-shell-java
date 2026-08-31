@@ -1,9 +1,12 @@
 import java.util.Scanner;
+import java.io.File;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         
         Scanner sc = new Scanner(System.in);
+        String path = System.getenv("PATH");
+        String[] pathDirs = path.split(";");
 
         while(true){
         System.out.print("$ ");
