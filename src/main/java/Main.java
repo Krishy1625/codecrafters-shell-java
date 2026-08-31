@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.File;
 
@@ -36,9 +37,16 @@ public class Main {
     }
 
     private static void type_command(String command){
+        
         String commandName = command.substring(5);
 
-        if(commandName.equals("echo") || commandName.equals("exit") || commandName.equals("type") || commandName.equals("pwd")){
+        ArrayList<String> shell_builtins = new ArrayList<>();
+        shell_builtins.add("echo");
+        shell_builtins.add("exit");
+        shell_builtins.add("type");
+        shell_builtins.add("pwd");
+
+        if(shell_builtins.contains(commandName)){
             System.out.println(commandName + " is a shell builtin");
         }
         else{
