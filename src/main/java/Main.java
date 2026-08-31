@@ -6,6 +6,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         
         Scanner sc = new Scanner(System.in);
+        File currentDirectory = new File(System.getProperty("user.dir"));
 
         while(true){
         System.out.print("$ ");
@@ -22,13 +23,25 @@ public class Main {
             type_command(command);
         }
         else if (command.equals("pwd")){
-            String userDirectory = System.getProperty("user.dir");
-            System.out.println(userDirectory);
+            System.out.println(currentDirectory.getAbsolutePath());
+        }
+        else if (command.startsWith("cd ")){
+            String directoryName = command.substring(3);
+            File directory = new File(directoryName);
+            if (directory.isDirectory()) {
+                currentDirectory = directory;
+            } else {
+                System.out.println("cd: " + directoryName + ": No such file or directory");
+            }
         }
         else{
             String[] commandParts = command.split("\\s+");
             if (findExecutable(commandParts[0]) != null) {
-                new ProcessBuilder(commandParts).inheritIO().start().waitFor();
+                new ProcessBuilder(commandParts)
+                    .directory(currentDirectory)
+                    .inheritIO()
+                    .start()
+                    .waitFor();
             } else {
                 System.out.println(commandParts[0] + ": command not found");
             }
@@ -45,6 +58,7 @@ public class Main {
         shell_builtins.add("exit");
         shell_builtins.add("type");
         shell_builtins.add("pwd");
+        shell_builtins.add("cd");
 
         if(shell_builtins.contains(commandName)){
             System.out.println(commandName + " is a shell builtin");
