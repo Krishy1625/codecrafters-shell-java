@@ -108,6 +108,10 @@ public class Main {
             if (character == '\\' && !inSingleQuotes && !inDoubleQuotes
                 && index + 1 < command.length()) {
                 argument.append(command.charAt(++index));
+            } else if (character == '\\' && inDoubleQuotes
+                && index + 1 < command.length()
+                && (command.charAt(index + 1) == '"' || command.charAt(index + 1) == '\\')) {
+                argument.append(command.charAt(++index));
             } else if (character == '\'' && !inDoubleQuotes) {
                 inSingleQuotes = !inSingleQuotes;
             } else if (character == '"' && !inSingleQuotes) {
