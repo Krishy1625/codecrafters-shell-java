@@ -28,8 +28,11 @@ public class Main {
         else if (command.startsWith("cd ")){
             String directoryName = command.substring(3);
             File directory = new File(directoryName);
+            if (!directory.isAbsolute()) {
+                directory = new File(currentDirectory, directoryName);
+            }
             if (directory.isDirectory()) {
-                currentDirectory = directory;
+                currentDirectory = directory.getCanonicalFile();
             } else {
                 System.out.println("cd: " + directoryName + ": No such file or directory");
             }
