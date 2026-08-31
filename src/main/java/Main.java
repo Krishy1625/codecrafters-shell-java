@@ -18,7 +18,7 @@ public class Main {
         }
         else if (command.startsWith("type ")){
             if(command.startsWith("type echo") || command.startsWith("type exit") || command.startsWith("type type")){
-                System.out.println(command + " is a shell builtin");
+                System.out.println(command.substring(5) + " is a shell builtin");
             }
             else{
                 System.out.println(command.substring(5));
