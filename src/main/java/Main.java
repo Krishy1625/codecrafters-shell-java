@@ -5,9 +5,6 @@ public class Main {
     public static void main(String[] args) throws Exception {
         
         Scanner sc = new Scanner(System.in);
-        String path = System.getenv("PATH");
-        String[] pathDirs = path.split(";");
-
         while(true){
         System.out.print("$ ");
 
@@ -20,11 +17,28 @@ public class Main {
             System.out.println(command.substring(5));
         }
         else if (command.startsWith("type ")){
-            if(command.startsWith("type echo") || command.startsWith("type exit") || command.startsWith("type type")){
-                System.out.println(command.substring(5) + " is a shell builtin");
+            String commandName = command.substring(5);
+            if(commandName.equals("echo") || commandName.equals("exit") || commandName.equals("type")){
+                System.out.println(commandName + " is a shell builtin");
             }
             else{
-                System.out.println(command.substring(5) + ": not found");
+                String path = System.getenv("PATH");
+                boolean found = false;
+
+                if (path != null) {
+                    for (String pathDir : path.split(java.util.regex.Pattern.quote(File.pathSeparator))) {
+                        File executable = new File(pathDir, commandName);
+                        if (executable.isFile() && executable.canExecute()) {
+                            System.out.println(commandName + " is " + executable.getAbsolutePath());
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!found) {
+                    System.out.println(commandName + ": not found");
+                }
             }
         }
         else{
