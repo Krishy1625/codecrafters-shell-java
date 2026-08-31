@@ -17,7 +17,8 @@ public class Main {
             break;
         }
         else if (command.startsWith("echo ")){
-            System.out.println(command.substring(5));
+            ArrayList<String> commandParts = parseArguments(command);
+            System.out.println(String.join(" ", commandParts.subList(1, commandParts.size())));
         }
         else if (command.startsWith("type ")){
             type_command(command);
@@ -41,15 +42,15 @@ public class Main {
             }
         }
         else{
-            String[] commandParts = command.split("\\s+");
-            if (findExecutable(commandParts[0]) != null) {
+            ArrayList<String> commandParts = parseArguments(command);
+            if (findExecutable(commandParts.get(0)) != null) {
                 new ProcessBuilder(commandParts)
                     .directory(currentDirectory)
                     .inheritIO()
                     .start()
                     .waitFor();
             } else {
-                System.out.println(commandParts[0] + ": command not found");
+                System.out.println(commandParts.get(0) + ": command not found");
             }
         }
         }
@@ -93,5 +94,31 @@ public class Main {
         }
 
         return null;
+    }
+
+    private static ArrayList<String> parseArguments(String command) {
+        ArrayList<String> arguments = new ArrayList<>();
+        StringBuilder argument = new StringBuilder();
+        boolean inSingleQuotes = false;
+
+        for (int index = 0; index < command.length(); index++) {
+            char character = command.charAt(index);
+            if (character == '\'') {
+                inSingleQuotes = !inSingleQuotes;
+            } else if (Character.isWhitespace(character) && !inSingleQuotes) {
+                if (argument.length() > 0) {
+                    arguments.add(argument.toString());
+                    argument.setLength(0);
+                }
+            } else {
+                argument.append(character);
+            }
+        }
+
+        if (argument.length() > 0) {
+            arguments.add(argument.toString());
+        }
+
+        return arguments;
     }
 }
