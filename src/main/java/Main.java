@@ -27,9 +27,12 @@ public class Main {
         }
         else if (command.startsWith("cd ")){
             String directoryName = command.substring(3);
-            File directory = new File(directoryName);
+            String resolvedDirectoryName = directoryName.equals("~")
+                ? System.getenv("HOME")
+                : directoryName;
+            File directory = new File(resolvedDirectoryName);
             if (!directory.isAbsolute()) {
-                directory = new File(currentDirectory, directoryName);
+                directory = new File(currentDirectory, resolvedDirectoryName);
             }
             if (directory.isDirectory()) {
                 currentDirectory = directory.getCanonicalFile();
