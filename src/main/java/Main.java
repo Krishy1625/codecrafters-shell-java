@@ -105,7 +105,10 @@ public class Main {
 
         for (int index = 0; index < command.length(); index++) {
             char character = command.charAt(index);
-            if (character == '\'' && !inDoubleQuotes) {
+            if (character == '\\' && !inSingleQuotes && !inDoubleQuotes
+                && index + 1 < command.length()) {
+                argument.append(command.charAt(++index));
+            } else if (character == '\'' && !inDoubleQuotes) {
                 inSingleQuotes = !inSingleQuotes;
             } else if (character == '"' && !inSingleQuotes) {
                 inDoubleQuotes = !inDoubleQuotes;
