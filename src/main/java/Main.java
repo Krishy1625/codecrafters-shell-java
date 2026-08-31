@@ -101,12 +101,15 @@ public class Main {
         ArrayList<String> arguments = new ArrayList<>();
         StringBuilder argument = new StringBuilder();
         boolean inSingleQuotes = false;
+        boolean inDoubleQuotes = false;
 
         for (int index = 0; index < command.length(); index++) {
             char character = command.charAt(index);
-            if (character == '\'') {
+            if (character == '\'' && !inDoubleQuotes) {
                 inSingleQuotes = !inSingleQuotes;
-            } else if (Character.isWhitespace(character) && !inSingleQuotes) {
+            } else if (character == '"' && !inSingleQuotes) {
+                inDoubleQuotes = !inDoubleQuotes;
+            } else if (Character.isWhitespace(character) && !inSingleQuotes && !inDoubleQuotes) {
                 if (argument.length() > 0) {
                     arguments.add(argument.toString());
                     argument.setLength(0);
