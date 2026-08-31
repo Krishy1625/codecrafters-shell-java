@@ -38,7 +38,7 @@ public class Main {
     private static void type_command(String command){
         String commandName = command.substring(5);
 
-        if(commandName.equals("echo") || commandName.equals("exit") || commandName.equals("type")){
+        if(commandName.equals("echo") || commandName.equals("exit") || commandName.equals("type") || commandName.equals("pwd")){
             System.out.println(commandName + " is a shell builtin");
         }
         else{
