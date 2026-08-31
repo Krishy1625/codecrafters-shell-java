@@ -66,6 +66,7 @@ public class Main {
         shell_builtins.add("type");
         shell_builtins.add("pwd");
         shell_builtins.add("cd");
+        shell_builtins.add("declare");
 
         if(shell_builtins.contains(commandName)){
             System.out.println(commandName + " is a shell builtin");
