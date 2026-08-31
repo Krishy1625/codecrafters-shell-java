@@ -20,6 +20,10 @@ public class Main {
         else if (command.startsWith("type ")){
             type_command(command);
         }
+        else if (command.equals("pwd")){
+            String userDirectory = System.getProperty("user.dir");
+            System.out.println(userDirectory);
+        }
         else{
             String[] commandParts = command.split("\\s+");
             if (findExecutable(commandParts[0]) != null) {
